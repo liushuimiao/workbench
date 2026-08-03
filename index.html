@@ -7,27 +7,24 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
-    --bg:        #f7f5ef;   /* 奶油底 */
-    --sidebar:   #14161c;   /* 深色侧栏 */
-    --panel:     #ffffff;   /* 卡片白 */
-    --text:      #23262e;   /* 主文字 */
-    --text-soft: #9a9ea8;   /* 次要灰 */
-    --border:    #ececec;   /* 浅描边 */
-    --accent:    #111318;   /* 主按钮黑 */
-    --pink:      #f4c9dd;
-    --pink-2:    #fbe6ef;
-    --yellow:    #f4e3a1;
-    --yellow-2:  #fbf3d2;
-    --green:     #cfe6b0;
-    --green-2:   #eaf4d9;
-    --blue:      #bcd4f0;
-    --blue-2:    #e4eefb;
-    --lav:       #d9cdf0;
-    --lav-2:     #efe9fa;
-    --todo:   #e0a53a;
-    --doing:  #4f8fd8;
-    --done:   #6fb043;
-    --danger: #e5484d;
+    --bg:        #e6e8dd;   /* 米灰底 */
+    --sidebar:   #000000;   /* 黑色侧栏 */
+    --panel:     #f6f7f7;   /* 卡片近白 */
+    --text:      #1c1e1a;   /* 主文字（近黑） */
+    --text-soft: #8a8d82;   /* 次要灰绿 */
+    --border:    #dfe1d7;   /* 浅描边 */
+    --accent:    #111311;   /* 主按钮黑 */
+    --lime:      #c6ef4e;   /* 鲜亮绿点缀 */
+    --lime-dk:   #a9d534;   /* 深一点的亮绿 */
+    --olive:     #5f6b3f;   /* 暗绿 */
+    /* 三色柔和列底：米灰 / 淡灰 / 浅灰绿 */
+    --tint-a:    #eaecdf;   --acc-a: #5f6b3f;
+    --tint-b:    #f0f1ec;   --acc-b: #a3a596;
+    --tint-c:    #e2e7d6;   --acc-c: #7c8a4e;
+    --todo:   #a7896a;
+    --doing:  #6f8fae;
+    --done:   #7c8a4e;
+    --danger: #c0563f;
   }
   html, body {
     height: 100%;
@@ -56,14 +53,14 @@
     color: #b9bdc7; transition: background .15s, color .15s;
   }
   .nav-item:hover { background: rgba(255,255,255,.06); color: #eef0f4; }
-  .nav-item.active { background: #ffffff; color: #16181e; font-weight: 500; }
+  .nav-item.active { background: var(--lime); color: #1a1c15; font-weight: 600; }
   .nav-item .ico { font-size: 17px; width: 22px; text-align: center; }
   .nav-item .cnt {
     margin-left: auto; font-size: 11px; font-weight: 600;
     background: rgba(255,255,255,.12); color: #cfd2d9;
     padding: 2px 9px; border-radius: 11px; min-width: 24px; text-align: center;
   }
-  .nav-item.active .cnt { background: #eceef2; color: #4a4e58; }
+  .nav-item.active .cnt { background: rgba(0,0,0,.14); color: #2a2d20; }
   .sidebar-footer {
     margin-top: auto; padding: 16px 10px 2px; font-size: 11px;
     color: #6b6f7a; line-height: 1.9;
@@ -91,12 +88,12 @@
   .week-picker select:focus { outline: none; border-color: #d6d8dd; }
 
   .readonly-banner {
-    background: var(--yellow-2); border: 1px solid #f0e2ad; color: #9a7b1e;
+    background: #e2e7d1; border: 1px solid #cdd6b3; color: #5f6b3f;
     font-size: 13px; padding: 9px 18px; margin: 0 30px; border-radius: 14px;
     display: none; align-items: center; gap: 12px;
   }
   .readonly-banner.show { display: flex; }
-  .readonly-banner a { color: #6b5210; cursor: pointer; text-decoration: underline; }
+  .readonly-banner a { color: #3f4a26; cursor: pointer; text-decoration: underline; }
 
   .board {
     flex: 1; display: flex; gap: 18px; padding: 18px 30px 26px; overflow-x: auto;
@@ -110,10 +107,10 @@
     padding-top: 4px;
   }
   .board.single .column { max-width: 780px; }
-  /* 每列不同柔和色调（淡黄/淡绿/淡蓝循环） */
-  .column:nth-child(3n+1) { --col-tint: var(--yellow-2); --col-accent: var(--yellow); }
-  .column:nth-child(3n+2) { --col-tint: var(--green-2);  --col-accent: var(--green); }
-  .column:nth-child(3n+3) { --col-tint: var(--blue-2);   --col-accent: var(--blue); }
+  /* 每列不同柔和色调（米灰 / 淡灰 / 浅灰绿 循环） */
+  .column:nth-child(3n+1) { --col-tint: var(--tint-a); --col-accent: var(--acc-a); }
+  .column:nth-child(3n+2) { --col-tint: var(--tint-b); --col-accent: var(--acc-b); }
+  .column:nth-child(3n+3) { --col-tint: var(--tint-c); --col-accent: var(--acc-c); }
   .column-head {
     display: flex; align-items: center; gap: 9px;
     padding: 16px 18px 12px; font-size: 15px; font-weight: 600; color: var(--text);
@@ -157,9 +154,9 @@
     flex: 1; font-size: 14px; line-height: 1.55; word-break: break-word;
     cursor: text; padding: 1px 0; border-radius: 6px; color: var(--text);
   }
-  .txt:focus { outline: none; background: #f4f6fa; box-shadow: 0 0 0 2px #dbe3f0; padding: 2px 6px; }
-  .item.done { background: #eef6e6; box-shadow: 0 1px 3px rgba(30,32,40,.04); }
-  .item.done .txt { color: #7c9a5f; text-decoration: none; }
+  .txt:focus { outline: none; background: #eceee6; box-shadow: 0 0 0 2px #d3d8c6; padding: 2px 6px; }
+  .item.done { background: #e4e5e0; box-shadow: none; }
+  .item.done .txt { color: #9a9c92; text-decoration: none; }
   .del {
     flex-shrink: 0; border: none; background: transparent; color: #c0c3ca; 
     font-size: 18px; cursor: pointer; padding: 0 4px; line-height: 1; border-radius: 7px;
