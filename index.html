@@ -173,6 +173,58 @@
 
   .empty-hint { font-size: 12px; color: #b7bac2; text-align: center; padding: 14px 0; }
 
+  /* ---------- 日历周视图 ---------- */
+  .cal-wrap {
+    flex: 1; display: flex; flex-direction: column; overflow: hidden;
+    padding: 6px 30px 24px;
+  }
+  .cal-meta { font-size: 12px; color: var(--text-soft); padding: 2px 2px 12px; }
+  .cal-card {
+    flex: 1; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 20px; overflow: hidden; display: flex; flex-direction: column;
+    box-shadow: 0 2px 8px rgba(30,32,40,.05);
+  }
+  /* 顶部星期表头 */
+  .cal-head {
+    display: grid; grid-template-columns: 56px repeat(7, 1fr);
+    border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .cal-head .corner { border-right: 1px solid var(--border); }
+  .cal-head .day {
+    padding: 10px 6px; text-align: center; border-right: 1px solid var(--border);
+    font-size: 12px; color: var(--text-soft);
+  }
+  .cal-head .day:last-child { border-right: none; }
+  .cal-head .day .dnum { font-size: 17px; font-weight: 700; color: var(--text); margin-top: 2px; }
+  .cal-head .day.today .dnum {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%; background: var(--lime); color: #1a1c15;
+  }
+  /* 主体时间网格 */
+  .cal-body {
+    flex: 1; overflow-y: auto; position: relative;
+    display: grid; grid-template-columns: 56px repeat(7, 1fr);
+  }
+  .cal-col { position: relative; border-right: 1px solid var(--border); }
+  .cal-col:last-child { border-right: none; }
+  .cal-axis { position: relative; }
+  .cal-axis .hr {
+    height: 52px; box-sizing: border-box; text-align: right; padding-right: 8px;
+    font-size: 10px; color: #a9ab9f; transform: translateY(-6px);
+  }
+  .cal-col .slot { height: 52px; box-sizing: border-box; border-bottom: 1px solid #eef0e8; }
+  /* 会议块 */
+  .cal-event {
+    position: absolute; left: 3px; right: 3px; border-radius: 8px;
+    padding: 4px 7px; font-size: 11px; line-height: 1.3; overflow: hidden;
+    box-shadow: 0 1px 3px rgba(30,32,40,.12); cursor: default;
+    background: #eef0e6; border-left: 3px solid var(--olive); color: #37402a;
+  }
+  .cal-event.mine { background: #eaf6c8; border-left-color: var(--lime-dk); color: #33401a; }
+  .cal-event .ev-t { font-weight: 600; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cal-event .ev-m { color: inherit; opacity: .7; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cal-empty { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-soft); font-size: 13px; }
+
   .sync-overlay {
     position: fixed; inset: 0; background: rgba(20,22,28,.44);
     display: none; align-items: center; justify-content: center; z-index: 60;
@@ -264,6 +316,14 @@
     .del { font-size: 20px; padding: 0 6px; }
     .add-line input { font-size: 14px; padding: 12px 13px; }
 
+    .cal-wrap { padding: 4px 10px 20px; }
+    .cal-meta { font-size: 11px; padding: 2px 2px 8px; }
+    .cal-card { overflow: auto; }
+    .cal-head, .cal-body { grid-template-columns: 40px repeat(7, minmax(72px, 1fr)); min-width: 560px; }
+    .cal-head .day { padding: 8px 3px; font-size: 11px; }
+    .cal-head .day .dnum { font-size: 15px; }
+    .cal-axis .hr { font-size: 9px; padding-right: 5px; }
+
     .sync-modal { padding: 20px 18px; }
   }
 </style>
@@ -354,6 +414,22 @@
     { id: "special", name: "特殊事项", icon: "\u2B50", desc: "临时或跨周的特别事项",
       cols: [ { id: "list", name: "事项" } ] }
   ];
+
+  // ============ 钉钉日历快照（由每日同步自动更新，只读） ============
+  var CALENDAR_DATA = {
+    weekStart: "2026-08-03",
+    syncedAt: "2026-08-03 09:00",
+    events: [
+      { date: "2026-08-03", start: "15:00", end: "16:30", title: "丑东西展传播方案脑暴", loc: "4N", mine: true },
+      { date: "2026-08-03", start: "17:00", end: "18:00", title: "发散一下视频想法", loc: "", mine: true },
+      { date: "2026-08-04", start: "14:00", end: "16:00", title: "端视频", loc: "", mine: true },
+      { date: "2026-08-04", start: "16:00", end: "17:00", title: "丑东西项目沟通", loc: "", mine: false },
+      { date: "2026-08-05", start: "10:30", end: "12:20", title: "策划组周会", loc: "公关项目室", mine: false },
+      { date: "2026-08-05", start: "14:00", end: "16:00", title: "丑东西选品表沟通", loc: "4n", mine: false },
+      { date: "2026-08-06", start: "10:30", end: "12:00", title: "周会", loc: "项目室", mine: false },
+      { date: "2026-08-07", start: "13:30", end: "18:00", title: "丑东西线下周会", loc: "杭州-西溪A区-A区访客中心-303 缀锦楼N", mine: false }
+    ]
+  };
 
   var state = load();
   var currentBoard = BOARDS[0].id;
@@ -615,6 +691,15 @@
       el.onclick = function () { currentBoard = b.id; renderAll(); };
       nav.appendChild(el);
     });
+
+    // 日历模块入口（只读快照）
+    var calEl = document.createElement("div");
+    calEl.className = "nav-item" + (currentBoard === "calendar" ? " active" : "");
+    calEl.title = "本周会议";
+    calEl.innerHTML = '<span class="ico">\uD83D\uDCC6</span><span>本周会议</span>' +
+      '<span class="cnt">' + (CALENDAR_DATA.events ? CALENDAR_DATA.events.length : 0) + '</span>';
+    calEl.onclick = function () { currentBoard = "calendar"; renderAll(); };
+    nav.appendChild(calEl);
   }
 
   function renderWeekSelect() {
@@ -643,6 +728,12 @@
   }
 
   function renderBoard() {
+    if (currentBoard === "calendar") {
+      document.getElementById("boardTitle").textContent = "\uD83D\uDCC6 本周会议";
+      document.getElementById("boardDesc").textContent = "来自钉钉日历 · 只读";
+      renderCalendar();
+      return;
+    }
     var conf = boardConf(currentBoard);
     document.getElementById("boardTitle").textContent = conf.icon + " " + conf.name;
     document.getElementById("boardDesc").textContent = conf.desc;
@@ -700,6 +791,138 @@
       }
       board.appendChild(column);
     });
+  }
+
+  function renderCalendar() {
+    var board = document.getElementById("board");
+    board.className = "board single";
+    board.innerHTML = "";
+
+    var wrap = document.createElement("div");
+    wrap.className = "cal-wrap";
+
+    var meta = document.createElement("div");
+    meta.className = "cal-meta";
+    meta.textContent = "最近同步：" + (CALENDAR_DATA.syncedAt || "—") + " · 数据来自钉钉日历，每天早上自动更新";
+    wrap.appendChild(meta);
+
+    var card = document.createElement("div");
+    card.className = "cal-card";
+
+    var events = CALENDAR_DATA.events || [];
+
+    function toMin(hhmm) {
+      var p = (hhmm || "0:0").split(":");
+      return parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
+    }
+    function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+    // 7 天日期
+    var parts = (CALENDAR_DATA.weekStart || "").split("-");
+    var mon = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    var wkNames = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+    var days = [];
+    for (var i = 0; i < 7; i++) {
+      var d = new Date(mon); d.setDate(mon.getDate() + i);
+      days.push(d);
+    }
+    var todayStr = (function () {
+      var t = new Date();
+      return t.getFullYear() + "-" + pad(t.getMonth() + 1) + "-" + pad(t.getDate());
+    })();
+    function dstr(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+
+    // 空状态
+    if (!events.length) {
+      var head0 = buildHead();
+      card.appendChild(head0);
+      var empty = document.createElement("div");
+      empty.className = "cal-empty";
+      empty.textContent = "本周暂无会议";
+      card.appendChild(empty);
+      wrap.appendChild(card);
+      board.appendChild(wrap);
+      return;
+    }
+
+    // 计算时间范围
+    var minStart = 8 * 60, maxEnd = 19 * 60;
+    events.forEach(function (e) {
+      minStart = Math.min(minStart, toMin(e.start));
+      maxEnd = Math.max(maxEnd, toMin(e.end));
+    });
+    var startHour = Math.floor(minStart / 60);
+    var endHour = Math.ceil(maxEnd / 60);
+    var PX = 52; // 每小时高度
+
+    // 表头
+    function buildHead() {
+      var head = document.createElement("div");
+      head.className = "cal-head";
+      var corner = document.createElement("div");
+      corner.className = "corner";
+      head.appendChild(corner);
+      days.forEach(function (d) {
+        var col = document.createElement("div");
+        col.className = "day" + (dstr(d) === todayStr ? " today" : "");
+        col.innerHTML = wkNames[(d.getDay() + 6) % 7] +
+          '<div class="dnum">' + d.getDate() + '</div>';
+        head.appendChild(col);
+      });
+      return head;
+    }
+    card.appendChild(buildHead());
+
+    // 主体
+    var body = document.createElement("div");
+    body.className = "cal-body";
+
+    // 时间轴
+    var axis = document.createElement("div");
+    axis.className = "cal-axis";
+    for (var h = startHour; h < endHour; h++) {
+      var hr = document.createElement("div");
+      hr.className = "hr";
+      hr.textContent = pad(h) + ":00";
+      axis.appendChild(hr);
+    }
+    body.appendChild(axis);
+
+    // 7 天列
+    days.forEach(function (d) {
+      var col = document.createElement("div");
+      col.className = "cal-col";
+      for (var h2 = startHour; h2 < endHour; h2++) {
+        var slot = document.createElement("div");
+        slot.className = "slot";
+        col.appendChild(slot);
+      }
+      // 当天会议
+      events.filter(function (e) { return e.date === dstr(d); }).forEach(function (e) {
+        var top = (toMin(e.start) - startHour * 60) / 60 * PX;
+        var height = Math.max(22, (toMin(e.end) - toMin(e.start)) / 60 * PX - 2);
+        var ev = document.createElement("div");
+        ev.className = "cal-event" + (e.mine ? " mine" : "");
+        ev.style.top = top + "px";
+        ev.style.height = height + "px";
+        var range = e.start + "–" + e.end;
+        var sub = range + (e.loc ? " · " + e.loc : "");
+        ev.innerHTML = '<span class="ev-t">' + esc(e.title) + '</span>' +
+          '<span class="ev-m">' + esc(sub) + '</span>';
+        ev.title = e.title + "\n" + sub;
+        col.appendChild(ev);
+      });
+      body.appendChild(col);
+    });
+
+    card.appendChild(body);
+    wrap.appendChild(card);
+    board.appendChild(wrap);
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
   function makeItem(it, col, ro) {
