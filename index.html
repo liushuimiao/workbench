@@ -37,6 +37,7 @@
   .sidebar h1 { font-size: 16px; color: #fff; padding: 0 10px 4px; letter-spacing: .5px; }
   .sidebar .sub { font-size: 12px; color: #6f7686; padding: 0 10px 20px; }
   .nav-item {
+    position: relative;
     display: flex; align-items: center; gap: 10px;
     padding: 12px 14px; border-radius: 10px; cursor: pointer;
     font-size: 14px; margin-bottom: 4px; transition: background .15s; user-select: none;
@@ -179,6 +180,65 @@
     font-size: 13px; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 99;
   }
   .toast.show { opacity: 1; }
+
+  /* ---------- 手机适配（<= 700px）---------- */
+  @media (max-width: 700px) {
+    html, body { height: auto; min-height: 100%; }
+    body { overflow: auto; align-items: stretch; }
+
+    /* 侧边栏：收窄成只显示图标的窄条 */
+    .sidebar {
+      width: 62px; padding: 14px 8px;
+      position: sticky; top: 0; height: 100vh; align-self: flex-start;
+    }
+    .sidebar h1, .sidebar .sub { display: none; }
+    .nav-item {
+      justify-content: center; padding: 12px 0; gap: 0; margin-bottom: 6px;
+    }
+    .nav-item > span:not(.ico):not(.cnt) { display: none; } /* 隐藏文字名 */
+    .nav-item .ico { width: auto; font-size: 22px; }
+    .nav-item .cnt {
+      position: absolute; top: 3px; right: 4px; margin: 0;
+      min-width: 16px; padding: 0 4px; font-size: 10px; line-height: 16px;
+    }
+    .sidebar-footer {
+      padding: 10px 2px 0; font-size: 9px; text-align: center; line-height: 1.5;
+    }
+    .sidebar-footer br { display: none; }
+    .sidebar-footer a { display: block; margin: 3px 0; }
+    #syncStatus { display: none; }
+
+    /* 主区：可纵向滚动 */
+    .main { overflow: visible; }
+    .topbar {
+      min-height: 52px; padding: 0 14px; gap: 8px; flex-wrap: wrap;
+      position: sticky; top: 0; z-index: 20;
+    }
+    .topbar .title { font-size: 16px; }
+    .topbar .desc { display: none; }
+    .week-picker span { display: none; }
+    .week-picker select { padding: 6px 8px; max-width: 150px; }
+
+    .readonly-banner { padding: 8px 14px; font-size: 12px; }
+
+    /* 面板：列改为按行纵向排列 */
+    .board {
+      flex-direction: column; gap: 12px; padding: 14px; overflow-x: visible;
+    }
+    .board.single { justify-content: flex-start; }
+    .column {
+      flex: none; width: 100%; min-width: 0; max-height: none;
+    }
+    .board.single .column { max-width: none; }
+    .cards { overflow-y: visible; }
+    .item { padding: 12px 12px; }
+    .txt { font-size: 15px; }
+    .check { width: 20px; height: 20px; }
+    .del { font-size: 20px; padding: 0 6px; }
+    .add-line input { font-size: 14px; padding: 11px 12px; }
+
+    .sync-modal { padding: 18px 16px; }
+  }
 </style>
 </head>
 <body>
@@ -522,6 +582,7 @@
       });
       var el = document.createElement("div");
       el.className = "nav-item" + (b.id === currentBoard ? " active" : "");
+      el.title = b.name;
       el.innerHTML = '<span class="ico">' + b.icon + '</span><span>' + b.name +
         '</span><span class="cnt">' + open + '</span>';
       el.onclick = function () { currentBoard = b.id; renderAll(); };
