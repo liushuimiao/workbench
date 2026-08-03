@@ -110,12 +110,10 @@
     padding-top: 4px;
   }
   .board.single .column { max-width: 780px; }
-  /* 每列不同马卡龙色调（按出现顺序循环） */
-  .column:nth-child(5n+1) { --col-tint: var(--yellow-2); --col-accent: var(--yellow); }
-  .column:nth-child(5n+2) { --col-tint: var(--pink-2);   --col-accent: var(--pink); }
-  .column:nth-child(5n+3) { --col-tint: var(--green-2);  --col-accent: var(--green); }
-  .column:nth-child(5n+4) { --col-tint: var(--blue-2);   --col-accent: var(--blue); }
-  .column:nth-child(5n+5) { --col-tint: var(--lav-2);    --col-accent: var(--lav); }
+  /* 每列不同柔和色调（淡黄/淡绿/淡蓝循环） */
+  .column:nth-child(3n+1) { --col-tint: var(--yellow-2); --col-accent: var(--yellow); }
+  .column:nth-child(3n+2) { --col-tint: var(--green-2);  --col-accent: var(--green); }
+  .column:nth-child(3n+3) { --col-tint: var(--blue-2);   --col-accent: var(--blue); }
   .column-head {
     display: flex; align-items: center; gap: 9px;
     padding: 16px 18px 12px; font-size: 15px; font-weight: 600; color: var(--text);
@@ -160,7 +158,8 @@
     cursor: text; padding: 1px 0; border-radius: 6px; color: var(--text);
   }
   .txt:focus { outline: none; background: #f4f6fa; box-shadow: 0 0 0 2px #dbe3f0; padding: 2px 6px; }
-  .item.done .txt { text-decoration: line-through; color: var(--text-soft); }
+  .item.done { background: #eef6e6; box-shadow: 0 1px 3px rgba(30,32,40,.04); }
+  .item.done .txt { color: #7c9a5f; text-decoration: none; }
   .del {
     flex-shrink: 0; border: none; background: transparent; color: #c0c3ca; 
     font-size: 18px; cursor: pointer; padding: 0 4px; line-height: 1; border-radius: 7px;
@@ -274,7 +273,7 @@
 </head>
 <body>
   <aside class="sidebar">
-    <h1>我的任务工作台</h1>
+    <h1>zouuu的工作台</h1>
     <div class="sub">每周固定流程 · 自动保存</div>
     <nav id="nav"></nav>
     <div class="sidebar-footer">
