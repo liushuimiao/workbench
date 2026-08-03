@@ -71,7 +71,8 @@
   #syncStatus { margin-top: 8px; color: #6b6f7a !important; }
 
   /* ---------- Main ---------- */
-  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding-right: 292px; }
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding-right: 256px; transition: padding-right .26s ease; }
+  body.today-collapsed .main { padding-right: 0; }
   .topbar {
     min-height: 70px; flex-shrink: 0; background: transparent;
     display: flex; align-items: center; padding: 8px 30px 0; gap: 14px;
@@ -227,60 +228,80 @@
 
   /* ---------- 今日待办 悬浮面板 ---------- */
   .today-panel {
-    position: fixed; top: 12px; right: 12px; bottom: 12px; width: 268px;
-    background: var(--panel); border: 1px solid var(--border); border-radius: 20px;
-    box-shadow: 0 6px 24px rgba(30,32,40,.1); display: flex; flex-direction: column;
-    z-index: 40; overflow: hidden;
+    position: fixed; top: 16px; right: 16px; width: 228px;
+    max-height: calc(100vh - 32px);
+    background: #fbfbf0; border: 1px solid #e8e9da; border-radius: 14px;
+    box-shadow: 0 8px 22px rgba(30,32,40,.14);
+    display: flex; flex-direction: column; overflow: hidden;
+    z-index: 40; transition: transform .26s ease, opacity .2s ease;
   }
+  body.today-collapsed .today-panel {
+    transform: translateX(calc(100% + 26px)); opacity: 0; pointer-events: none;
+  }
+  /* 收起后右侧的小拉手 */
+  .today-tab {
+    position: fixed; top: 22px; right: 0; display: none;
+    align-items: center; gap: 6px; cursor: pointer; z-index: 39;
+    background: var(--lime-dk); color: #1a1c15; font-size: 12px; font-weight: 600;
+    padding: 8px 11px 8px 12px; border-radius: 13px 0 0 13px;
+    box-shadow: -2px 3px 10px rgba(30,32,40,.16);
+  }
+  body.today-collapsed .today-tab { display: flex; }
+
   .today-head {
-    padding: 16px 16px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    padding: 11px 10px 7px 13px; display: flex; align-items: flex-start; gap: 6px;
+    flex-shrink: 0;
   }
+  .today-head .th-main { flex: 1; min-width: 0; }
   .today-head .th-title {
-    font-size: 15px; font-weight: 700; color: var(--text);
-    display: flex; align-items: center; gap: 7px;
+    font-size: 13px; font-weight: 700; color: var(--text);
+    display: flex; align-items: center; gap: 6px;
   }
-  .today-head .th-title .th-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--lime-dk); }
-  .today-head .th-date { font-size: 12px; color: var(--text-soft); margin-top: 3px; }
+  .today-head .th-title .th-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lime-dk); }
+  .today-head .th-date { font-size: 11px; color: var(--text-soft); margin-top: 2px; }
+  .th-toggle {
+    flex-shrink: 0; border: none; background: transparent; cursor: pointer;
+    color: #9a9c8e; font-size: 17px; line-height: 1; padding: 1px 4px; border-radius: 7px;
+  }
+  .th-toggle:hover { background: rgba(0,0,0,.05); color: var(--text); }
+
   .today-body {
-    flex: 1; overflow-y: auto; padding: 10px 12px;
-    display: flex; flex-direction: column; gap: 8px;
+    flex: 1; overflow-y: auto; padding: 2px 12px 10px;
+    display: flex; flex-direction: column;
   }
-  .today-empty { font-size: 12px; color: #b7bac2; text-align: center; padding: 18px 0; }
   .today-item {
-    display: flex; align-items: flex-start; gap: 9px;
-    background: #fff; border: 1px solid var(--border); border-radius: 12px;
-    padding: 9px 10px;
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 6px 2px; border-bottom: 1px dashed #e4e5d3;
   }
   .tcheck {
-    width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;
-    border: 2px solid #cdd0c4; border-radius: 6px; cursor: pointer; position: relative;
+    width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px;
+    border: 2px solid #cdd0c0; border-radius: 5px; cursor: pointer; position: relative;
     transition: border-color .12s, background .12s;
   }
   .tcheck:hover { border-color: var(--lime-dk); }
   .tcheck.on { background: var(--lime-dk); border-color: var(--lime-dk); }
   .tcheck.on::after {
-    content: ""; position: absolute; left: 5px; top: 1px;
-    width: 5px; height: 9px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
+    content: ""; position: absolute; left: 4px; top: 1px;
+    width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
   }
   .ttxt {
-    flex: 1; font-size: 13px; line-height: 1.5; word-break: break-word;
-    cursor: text; padding: 1px 0; border-radius: 5px; color: var(--text);
+    flex: 1; font-size: 13px; line-height: 1.45; word-break: break-word;
+    cursor: text; padding: 1px 0; border-radius: 4px; color: var(--text); min-height: 18px;
   }
-  .ttxt:focus { outline: none; background: #eceee6; box-shadow: 0 0 0 2px #d3d8c6; padding: 2px 5px; }
-  .today-item.done { background: #f2f3ee; }
+  .ttxt:focus { outline: none; background: #eef0e0; box-shadow: 0 0 0 2px #dfe3ca; padding: 1px 4px; }
   .today-item.done .ttxt { color: #a6a89d; }
   .tdel {
-    flex-shrink: 0; border: none; background: transparent; color: #c0c3ca;
-    font-size: 16px; cursor: pointer; padding: 0 2px; line-height: 1; border-radius: 6px;
+    flex-shrink: 0; border: none; background: transparent; color: #c6c8ba;
+    font-size: 15px; cursor: pointer; padding: 0 2px; line-height: 1; border-radius: 6px;
+    opacity: 0; transition: opacity .12s;
   }
+  .today-item:hover .tdel { opacity: 1; }
   .tdel:hover { color: var(--danger); background: #fdeaea; }
-  .today-add { padding: 10px 12px 12px; border-top: 1px solid var(--border); flex-shrink: 0; }
-  .today-add input {
-    width: 100%; border: 1px dashed #cbcdc2; background: rgba(255,255,255,.6);
-    border-radius: 11px; padding: 9px 11px; font-size: 13px; color: var(--text);
+  /* 直接键入的空行 */
+  .today-item.ghost { border-bottom: none; }
+  .today-item.ghost .ttxt:empty::before {
+    content: "写点什么…"; color: #b7b9a8;
   }
-  .today-add input::placeholder { color: #a9adb6; }
-  .today-add input:focus { outline: none; border-style: solid; border-color: #c2c5cc; background: #fff; }
 
   .sync-overlay {
     position: fixed; inset: 0; background: rgba(20,22,28,.44);
@@ -424,14 +445,15 @@
 
     <aside class="today-panel">
       <div class="today-head">
-        <div class="th-title"><span class="th-dot"></span>今日待办</div>
-        <div class="th-date" id="todayDate"></div>
+        <div class="th-main">
+          <div class="th-title"><span class="th-dot"></span>今日待办</div>
+          <div class="th-date" id="todayDate"></div>
+        </div>
+        <button class="th-toggle" id="todayCollapse" title="收起便签">–</button>
       </div>
       <div class="today-body" id="todayBody"></div>
-      <div class="today-add">
-        <input type="text" id="todayInput" placeholder="+ 今天要做的事…">
-      </div>
     </aside>
+    <div class="today-tab" id="todayTab">📝 今日待办</div>
   </main>
 
   <div class="sync-overlay" id="syncOverlay">
@@ -1102,14 +1124,6 @@
     body.innerHTML = "";
     var arr = state.today.items;
 
-    if (!arr.length) {
-      var hint = document.createElement("div");
-      hint.className = "today-empty";
-      hint.textContent = "今天还没有安排，加一条吧";
-      body.appendChild(hint);
-      return;
-    }
-
     arr.forEach(function (it) {
       var row = document.createElement("div");
       row.className = "today-item" + (it.done ? " done" : "");
@@ -1135,6 +1149,33 @@
       row.appendChild(del);
       body.appendChild(row);
     });
+
+    // 末尾常驻空行：直接键入即可新增
+    var ghost = document.createElement("div");
+    ghost.className = "today-item ghost";
+    var gtxt = document.createElement("div");
+    gtxt.className = "ttxt";
+    gtxt.contentEditable = "true";
+    gtxt.spellcheck = false;
+    gtxt.onkeydown = function (e) {
+      if (e.key === "Enter") { e.preventDefault(); commitGhost(gtxt, false); }
+    };
+    gtxt.onblur = function () { commitGhost(gtxt, true); };
+    ghost.appendChild(gtxt);
+    body.appendChild(ghost);
+  }
+
+  function commitGhost(el, isBlur) {
+    var text = el.textContent.trim();
+    el.textContent = "";
+    if (!text) return;
+    todayAdd(text);
+    if (!isBlur) {
+      // 回车后重新渲染并让焦点回到新的空行，方便连续输入
+      var body = document.getElementById("todayBody");
+      var g = body && body.querySelector(".today-item.ghost .ttxt");
+      if (g) g.focus();
+    }
   }
 
   function todayAdd(text) {
@@ -1284,12 +1325,10 @@
     toast("已关闭云同步");
   };
 
-  var todayInput = document.getElementById("todayInput");
-  if (todayInput) {
-    todayInput.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") { todayAdd(todayInput.value); todayInput.value = ""; }
-    });
-  }
+  var todayCollapse = document.getElementById("todayCollapse");
+  var todayTab = document.getElementById("todayTab");
+  if (todayCollapse) todayCollapse.onclick = function () { document.body.classList.add("today-collapsed"); };
+  if (todayTab) todayTab.onclick = function () { document.body.classList.remove("today-collapsed"); };
 
   rolloverIfNeeded();
   renderAll();
