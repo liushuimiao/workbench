@@ -285,6 +285,10 @@
     content: ""; position: absolute; left: 4px; top: 1px;
     width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
   }
+  .tcarry {
+    flex-shrink: 0; margin-top: 1px; font-size: 12px; line-height: 16px;
+    color: var(--olive); opacity: .75; cursor: default; user-select: none;
+  }
   .ttxt {
     flex: 1; font-size: 13px; line-height: 1.45; word-break: break-word;
     cursor: text; padding: 1px 0; border-radius: 4px; color: var(--text); min-height: 18px;
@@ -614,7 +618,7 @@
       // 跨天：只保留未完成项，滚动到今天
       var carried = state.today.items
         .filter(function (it) { return !it.done; })
-        .map(function (it) { return { id: uid(), text: it.text, done: false }; });
+        .map(function (it) { return { id: uid(), text: it.text, done: false, carried: true }; });
       state.today = { date: today, items: carried };
     }
   }
@@ -1151,6 +1155,11 @@
       del.onclick = function () { todayRemove(it.id); };
 
       row.appendChild(check);
+      if (it.carried) {
+        var carry = document.createElement("span");
+        carry.className = "tcarry"; carry.textContent = "\u21BB"; carry.title = "顺延自昨日";
+        row.appendChild(carry);
+      }
       row.appendChild(txt);
       row.appendChild(del);
       body.appendChild(row);
